@@ -69,7 +69,7 @@ on GitHub:
 git remote add origin https://github.com/<your-username>/vehicle-service-portal.git
 git push origin 5ba2357:refs/heads/main          # initial commits only
 git push origin 5ba2357:refs/heads/develop       # develop before the first feature merge
-git push origin feature/user-registration-login  # 5 commits waiting for review
+git push origin feature/user-registration-login  # the feature commits waiting for review
 ```
 
 1. On GitHub open **Compare & pull request** for `feature/user-registration-login` into `develop`, fill in the template,
