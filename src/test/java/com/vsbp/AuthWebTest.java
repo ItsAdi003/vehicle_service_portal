@@ -84,6 +84,17 @@ class AuthWebTest {
                 .andExpect(status().is3xxRedirection());
     }
 
+    @Test
+    void invalidPhoneNumberIsRejected() throws Exception {
+        mockMvc.perform(post("/register")
+                        .param("fullName", "Asha Rao")
+                        .param("email", uniqueEmail())
+                        .param("phone", "abc")
+                        .param("password", "Secret123"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Enter a valid phone number")));
+    }
+
     private static String uniqueEmail() {
         return "user-" + UUID.randomUUID() + "@example.com";
     }

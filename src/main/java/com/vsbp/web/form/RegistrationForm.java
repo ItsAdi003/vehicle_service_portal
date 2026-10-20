@@ -2,6 +2,7 @@ package com.vsbp.web.form;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class RegistrationForm {
@@ -19,6 +20,7 @@ public class RegistrationForm {
     @Size(min = 8, max = 72, message = "Password must be 8 to 72 characters")
     private String password;
 
+    @Pattern(regexp = "^$|^[0-9+ -]{7,15}$", message = "Enter a valid phone number (7-15 digits)")
     private String phone;
 
     public String getFullName() {
