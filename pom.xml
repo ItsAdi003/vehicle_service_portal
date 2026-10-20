@@ -96,6 +96,14 @@
                     <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- HTML report: mvn surefire-report:failsafe-report-only  ->  target/site/failsafe-report.html -->
             <plugin>
