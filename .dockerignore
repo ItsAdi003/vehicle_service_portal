@@ -1,0 +1,12 @@
+.git
+.github
+.idea
+.vscode
+target
+data
+docs
+ansible
+scripts
+evidence
+*.md
+Jenkinsfile
