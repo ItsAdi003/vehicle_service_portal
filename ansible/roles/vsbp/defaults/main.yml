@@ -1,0 +1,20 @@
+---
+# Release being deployed. Change it for every new build so old releases stay available for rollback.
+vsbp_version: "1.0.0"
+# Environment label shown in the application footer
+vsbp_environment: staging
+# WAR built on the control node with: mvn clean package -DskipTests
+vsbp_artifact_src: "{{ playbook_dir }}/../target/vehicle-service-portal.war"
+
+vsbp_java_package: openjdk-17-jre-headless
+vsbp_user: vsbp
+vsbp_group: vsbp
+vsbp_port: 8080
+vsbp_java_opts: "-Xms128m -Xmx384m"
+
+vsbp_base_dir: /opt/vsbp
+vsbp_releases_dir: "{{ vsbp_base_dir }}/releases"
+vsbp_config_dir: /etc/vsbp
+vsbp_data_dir: /var/lib/vsbp
+vsbp_log_dir: /var/log/vsbp
+vsbp_health_url: "http://127.0.0.1:{{ vsbp_port }}/actuator/health"

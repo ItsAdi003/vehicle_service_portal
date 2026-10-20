@@ -1,0 +1,88 @@
+---
+# Switch back to the previous stable release (recorded by site.yml in /opt/vsbp/previous_version).
+#   ansible-playbook rollback.yml
+#   ansible-playbook rollback.yml -e rollback_to=1.0.0      # a specific release
+- name: Roll the Vehicle Service Booking Portal back to the previous release
+  hosts: vsbp_servers
+  become: true
+  vars_files:
+    - roles/vsbp/defaults/main.yml
+  tasks:
+    - name: Read the recorded previous release
+      ansible.builtin.slurp:
+        src: "{{ vsbp_base_dir }}/previous_version"
+      register: vsbp_previous_file
+      when: rollback_to is not defined
+      failed_when: false
+      tags: [release]
+
+    - name: Decide which release to restore
+      ansible.builtin.set_fact:
+        vsbp_rollback_target: "{{ rollback_to | default((vsbp_previous_file.content | default('')) | b64decode | trim) }}"
+      tags: [release]
+
+    - name: Stop when there is nothing to roll back to
+      ansible.builtin.assert:
+        that: vsbp_rollback_target | length > 0
+        fail_msg: "No previous release recorded. Pass one explicitly: -e rollback_to=<version>"
+        quiet: true
+      tags: [release]
+
+    - name: Check that the release folder exists
+      ansible.builtin.stat:
+        path: "{{ vsbp_releases_dir }}/{{ vsbp_rollback_target }}/vehicle-service-portal.war"
+      register: vsbp_target_war
+      tags: [release]
+
+    - name: Stop when the release is not on the server
+      ansible.builtin.assert:
+        that: vsbp_target_war.stat.exists
+        fail_msg: "Release {{ vsbp_rollback_target }} is not installed in {{ vsbp_releases_dir }}"
+        quiet: true
+      tags: [release]
+
+    - name: Look at the release that is active now
+      ansible.builtin.stat:
+        path: "{{ vsbp_base_dir }}/current"
+      register: vsbp_current
+      tags: [release]
+
+    - name: Remember the release we are leaving (so it can be restored again)
+      ansible.builtin.copy:
+        content: "{{ vsbp_current.stat.lnk_target | basename }}\n"
+        dest: "{{ vsbp_base_dir }}/previous_version"
+        owner: root
+        group: "{{ vsbp_group }}"
+        mode: "0644"
+      when: vsbp_current.stat.islnk | default(false)
+      tags: [release]
+
+    - name: Point "current" at the stable release
+      ansible.builtin.file:
+        src: "{{ vsbp_releases_dir }}/{{ vsbp_rollback_target }}"
+        dest: "{{ vsbp_base_dir }}/current"
+        state: link
+        force: true
+      tags: [release]
+
+    - name: Restart the service
+      ansible.builtin.systemd:
+        name: vsbp
+        state: restarted
+      tags: [service]
+
+    - name: Wait until the application reports UP
+      ansible.builtin.uri:
+        url: "{{ vsbp_health_url }}"
+        return_content: true
+      register: vsbp_health
+      until: vsbp_health.status == 200 and ('"status":"UP"' in (vsbp_health.content | default('')))
+      retries: 24
+      delay: 5
+      changed_when: false
+      tags: [health]
+
+    - name: Report
+      ansible.builtin.debug:
+        msg: "Rolled back to release {{ vsbp_rollback_target }}; health check passed."
+      tags: [health]

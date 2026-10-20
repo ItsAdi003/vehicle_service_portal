@@ -1,0 +1,20 @@
+# Managed by Ansible - changes are overwritten
+[Unit]
+Description=Vehicle Service Booking Portal ({{ vsbp_environment }})
+After=network.target
+
+[Service]
+Type=simple
+User={{ vsbp_user }}
+Group={{ vsbp_group }}
+EnvironmentFile={{ vsbp_config_dir }}/vsbp.env
+WorkingDirectory={{ vsbp_data_dir }}
+ExecStart=/usr/bin/java $JAVA_OPTS -jar {{ vsbp_base_dir }}/current/vehicle-service-portal.war
+SuccessExitCodes=143
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
