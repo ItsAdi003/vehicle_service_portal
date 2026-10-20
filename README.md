@@ -62,10 +62,19 @@ Health check: <http://localhost:8080/actuator/health>
 
 All lab deliverables live in [`docs/`](docs/):
 
-1. [Problem definition and scope](docs/01-problem-definition-and-scope.md)
-2. [Agile plan and DevOps workflow](docs/02-agile-plan-and-devops-workflow.md)
-3. [SRS, architecture and local setup](docs/03-srs-architecture-and-setup.md)
-4. [Git workflow and branch policy](docs/04-git-workflow.md)
+| Chapter | Content | Lab task |
+|---------|---------|----------|
+| [1. Problem definition and scope](docs/01-problem-definition-and-scope.md) | Problem statement, stakeholders, objectives, constraints, 15-task MVP | 2 |
+| [2. Agile plan and DevOps workflow](docs/02-agile-plan-and-devops-workflow.md) | User stories, backlog, Kanban, sprints, Definition of Done, lifecycle diagram | 3 |
+| [3. SRS, architecture and setup](docs/03-srs-architecture-and-setup.md) | Requirements, use cases, architecture, data model, routes, local setup | 4 |
+| [4. Git workflow](docs/04-git-workflow.md) | Repository setup, branch policy, PR flow, conflict and tags | 5, 6, 7 |
+| [5. Backlog status](docs/05-backlog-status.md) | Updated backlog after the MVP baseline | 7 |
+| [6. Jenkins CI/CD](docs/06-jenkins-ci-cd.md) | Jenkins install, freestyle job, pipeline, Selenium gate, Docker deployment | 8, 9, 11, 13 |
+| [7. Selenium test plan](docs/07-selenium-test-plan.md) | Journeys, test data, run and report instructions | 10, 11 |
+| [8. Docker](docs/08-docker.md) | Dockerfile, container lifecycle | 12 |
+| [9. Ansible](docs/09-ansible-configuration-management.md) | Configuration spec, playbooks, idempotency, rollback | 14, 15 |
+
+Also: [merge conflict evidence](docs/evidence/merge-conflict.md), [defect demonstration](docs/defect-demo/README.md).
 
 ## Branching and commits
 
