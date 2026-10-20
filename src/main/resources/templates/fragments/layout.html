@@ -14,6 +14,8 @@
     <nav id="main-nav">
       <a class="nav-link" th:href="@{/}" id="nav-home">Home</a>
       <a class="nav-link" th:if="${me != null}" th:href="@{/slots}" id="nav-slots">Available slots</a>
+      <a class="nav-link" th:if="${me != null and !me.admin}" th:href="@{/bookings}" id="nav-bookings">My bookings</a>
+      <a class="nav-link" th:if="${me != null and me.admin}" th:href="@{/admin/bookings}" id="nav-admin">Admin bookings</a>
       <a class="nav-link" th:if="${me == null}" th:href="@{/login}" id="nav-login">Login</a>
       <a class="nav-link" th:if="${me == null}" th:href="@{/register}" id="nav-register">Register</a>
       <form th:if="${me != null}" th:action="@{/logout}" method="post" class="inline">

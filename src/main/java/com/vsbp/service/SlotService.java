@@ -1,6 +1,8 @@
 package com.vsbp.service;
 
+import com.vsbp.domain.BookingStatus;
 import com.vsbp.domain.ServiceSlot;
+import com.vsbp.repository.BookingRepository;
 import com.vsbp.repository.ServiceSlotRepository;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -12,10 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SlotService {
 
     private final ServiceSlotRepository slots;
+    private final BookingRepository bookings;
     private final Clock clock;
 
-    public SlotService(ServiceSlotRepository slots, Clock clock) {
+    public SlotService(ServiceSlotRepository slots, BookingRepository bookings, Clock clock) {
         this.slots = slots;
+        this.bookings = bookings;
         this.clock = clock;
     }
 
@@ -28,8 +32,16 @@ public class SlotService {
                 .toList();
     }
 
-    /** Seats still free. Bookings are introduced with the booking workflow; until then every seat is free. */
+    @Transactional(readOnly = true)
+    public SlotAvailability availability(Long slotId) {
+        ServiceSlot slot = slots.findById(slotId)
+                .orElseThrow(() -> new BusinessException("The selected slot does not exist"));
+        return new SlotAvailability(slot, availableSeats(slot));
+    }
+
+    /** Capacity minus bookings that still hold a seat (everything except CANCELLED). Never negative. */
     public int availableSeats(ServiceSlot slot) {
-        return slot.getCapacity();
+        long used = bookings.countBySlotIdAndStatusNot(slot.getId(), BookingStatus.CANCELLED);
+        return (int) Math.max(0, slot.getCapacity() - used);
     }
 }
