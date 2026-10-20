@@ -13,6 +13,7 @@
     <a class="brand" th:href="@{/}">Vehicle Service Portal</a>
     <nav id="main-nav">
       <a th:href="@{/}">Home</a>
+      <a th:if="${me != null}" th:href="@{/slots}" id="nav-slots">Available slots</a>
       <a th:if="${me == null}" th:href="@{/login}" id="nav-login">Login</a>
       <a th:if="${me == null}" th:href="@{/register}" id="nav-register">Register</a>
       <form th:if="${me != null}" th:action="@{/logout}" method="post" class="inline">
