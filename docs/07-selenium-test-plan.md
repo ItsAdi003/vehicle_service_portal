@@ -9,9 +9,9 @@ make a failing journey **stop the pipeline** before anything is deployed.
 ### Test levels
 | Level | Tool | Naming | Maven phase | Count (approx.) |
 |-------|------|--------|-------------|-----------------|
-| Unit (domain rules, services) | JUnit 5 + Mockito | `*Test.java` | `test` (Surefire) | 35+ |
-| Web slice (controllers, validation, security) | Spring MockMvc | `*WebTest.java` | `test` (Surefire) | 20+ |
-| **UI journeys** | **Selenium WebDriver 4 + headless Chrome** | `*IT.java` in `com.vsbp.ui` | `verify` (Failsafe) | 9 test methods in 5 classes |
+| Unit (domain rules, services) | JUnit 5 + Mockito | `*Test.java` | `test` (Surefire) | 34 |
+| Web slice (controllers, validation, security) | Spring MockMvc | `*WebTest.java` | `test` (Surefire) | 21 |
+| **UI journeys** | **Selenium WebDriver 4 + headless Chrome** | `*IT.java` in `com.vsbp.ui` | `verify` (Failsafe) | 10 test methods in 5 classes |
 
 ### Environment
 The UI tests start the real application on a random port with an in-memory H2 database (`BaseSeleniumIT`), so

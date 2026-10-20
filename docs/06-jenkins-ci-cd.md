@@ -77,3 +77,29 @@ screenshot of `http://localhost:8081/vsbp-dev/` with the footer visible, *Build 
 | Deploy copies but Tomcat shows 404 / app does not start | Tomcat 9 used (needs 10.1), or Java < 17 on Tomcat |
 | Health check retries then fails | Wrong `TOMCAT_URL` / port, or the Tomcat log shows a startup error |
 | `Access is denied` on copy (Windows) | Jenkins service account has no write permission on `webapps` |
+
+## 6.5 Continuous testing: Selenium in Jenkins (Task 11)
+
+### Requirements on the Jenkins machine
+Google Chrome must be installed on the machine (agent) that runs the build. The tests run headless
+(`-Dselenium.headless=true`). If Chrome is installed in a non-standard place, add `-Dchrome.binary=<path>` to the Maven
+command in the *Selenium UI Tests* stage.
+
+### The stage
+```groovy
+stage('Selenium UI Tests') {
+  steps { script { run 'mvn -B -ntp -Dselenium.headless=true test-compile failsafe:integration-test failsafe:verify' } }
+  post { always {
+      junit allowEmptyResults: true, testResults: 'target/failsafe-reports/*.xml'
+      archiveArtifacts artifacts: 'target/screenshots/*', allowEmptyArchive: true } }
+}
+```
+* `failsafe:integration-test` runs the `*IT.java` classes and always writes the reports.
+* `failsafe:verify` fails the build when any test failed. A failed stage means Jenkins never reaches **Deploy to Tomcat**.
+* `post { always { ... } }` publishes the *Test Result* trend and the failure screenshots even for a red build.
+
+### Evidence checklist
+1. Green run: Stage View with *Selenium UI Tests* green; *Test Result* page (10 Selenium tests + unit tests).
+2. Introduce the defect with `docs/defect-demo/cancel-seat-defect.patch` (see `docs/defect-demo/README.md`): red run,
+   deploy stages skipped, screenshot archived.
+3. Fix commit and green re-run.
