@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin bookings')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+  <h1 id="page-title">All bookings (admin)</h1>
+
+  <p id="no-bookings" th:if="${#lists.isEmpty(bookings)}">There are no bookings yet.</p>
+
+  <table id="admin-bookings-table" th:unless="${#lists.isEmpty(bookings)}">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Customer</th>
+        <th>Slot</th>
+        <th>Vehicle</th>
+        <th>Service</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="booking-row" th:each="b : ${bookings}" th:attr="data-booking-id=${b.id}">
+        <td th:text="${b.id}">1</td>
+        <td th:text="${b.user.fullName}">Asha Rao</td>
+        <td th:text="${b.slot.dateLabel} + ', ' + ${b.slot.timeLabel}">Thu, 22 Oct 2026, 09:00</td>
+        <td th:text="${b.vehicleNumber} + ' (' + ${b.vehicleModel} + ')'">MH12AB1234 (Honda City)</td>
+        <td th:text="${b.serviceType.label}">Oil change</td>
+        <td><span class="badge booking-status" th:classappend="${'status-' + b.status.name().toLowerCase()}"
+                  th:text="${b.status}">REQUESTED</span></td>
+        <td>
+          <a class="details-link" th:href="@{/bookings/{id}(id=${b.id})}">Details</a>
+          <form th:if="${b.confirmable}" th:action="@{/admin/bookings/{id}/confirm(id=${b.id})}" method="post">
+            <button class="btn btn-ok confirm-btn" th:id="${'confirm-btn-' + b.id}" type="submit">Confirm</button>
+          </form>
+          <form th:if="${b.completable}" th:action="@{/admin/bookings/{id}/complete(id=${b.id})}" method="post">
+            <button class="btn complete-btn" th:id="${'complete-btn-' + b.id}" type="submit">Complete</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
