@@ -61,14 +61,14 @@ class AuthWebTest {
     }
 
     @Test
-    void loginWithCorrectCredentialsRedirectsHome() throws Exception {
+    void loginWithCorrectCredentialsRedirectsToSlots() throws Exception {
         String email = uniqueEmail();
         mockMvc.perform(post("/register")
                 .param("fullName", "Asha Rao").param("email", email).param("password", "Secret123"));
 
         mockMvc.perform(post("/login").param("email", email).param("password", "Secret123"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
+                .andExpect(redirectedUrl("/slots"));
     }
 
     @Test

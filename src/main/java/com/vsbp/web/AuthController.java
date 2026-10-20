@@ -71,7 +71,7 @@ public class AuthController {
         HttpSession session = request.getSession(true);
         request.changeSessionId(); // prevents session fixation
         session.setAttribute(SessionUser.KEY, SessionUser.from(user.get()));
-        return "redirect:/";
+        return "redirect:/slots";
     }
 
     @PostMapping("/logout")
