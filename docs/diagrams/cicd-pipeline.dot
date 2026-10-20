@@ -1,0 +1,14 @@
+digraph G {
+  rankdir=LR; bgcolor="white"; nodesep=0.25; ranksep=0.35;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.12,0.08", color="#334e68", fillcolor="#dbeafe"];
+  edge [color="#334e68", arrowsize=0.7];
+  dev [label="Developer\ngit push", fillcolor="#fef3c7"];
+  gh  [label="GitHub\nrepository", fillcolor="#fef3c7"];
+  subgraph cluster_j { label="Jenkins pipeline (Jenkinsfile)"; fontname="Helvetica-Bold"; style="rounded"; color="#0b5cad";
+    s1 [label="Checkout"]; s2 [label="Build\nmvn compile"]; s3 [label="Unit tests\nmvn test"]; s4 [label="Package\nWAR + archive"];
+    s5 [label="Selenium UI tests\nfailsafe"]; s6 [label="Deploy\nTomcat"]; s7 [label="Docker\nbuild + push"]; s8 [label="Run container\n+ health check", fillcolor="#dcfce7"];
+  }
+  stop [label="FAIL: pipeline stops,\nno deployment", fillcolor="#fee2e2", color="#b42318"];
+  dev -> gh -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7 -> s8;
+  s3 -> stop [style=dashed, color="#b42318"]; s5 -> stop [style=dashed, color="#b42318"];
+}

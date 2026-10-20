@@ -1,0 +1,23 @@
+digraph G {
+  rankdir=TB; bgcolor="white"; nodesep=0.4; ranksep=0.5; compound=true;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.18,0.1", color="#334e68", fillcolor="#f0f4f8"];
+  edge [color="#334e68", arrowsize=0.8, fontname="Helvetica", fontsize=9];
+
+  browser [label="Web browser\n(Customer / Admin)", fillcolor="#fef3c7"];
+
+  subgraph cluster_app { label="Spring Boot application (vehicle-service-portal.war)"; fontname="Helvetica-Bold"; style="rounded"; color="#0b5cad";
+    interceptor [label="AuthInterceptor\n(session check, role check)", fillcolor="#e0e7ff"];
+    controllers [label="Web layer - Spring MVC controllers\nHome / Auth / Slot / Booking / Admin", fillcolor="#dbeafe"];
+    views       [label="Thymeleaf templates + CSS", fillcolor="#dbeafe"];
+    services    [label="Service layer\nUserService - BookingService\n(business rules, transactions)", fillcolor="#dbeafe"];
+    domain      [label="Domain model\nAppUser - ServiceSlot - Booking", fillcolor="#dbeafe"];
+    repos       [label="Spring Data JPA repositories", fillcolor="#dbeafe"];
+    actuator    [label="Actuator\n/actuator/health", fillcolor="#dcfce7"];
+  }
+  db [label="H2 database\n(file in /data or /var/lib/vsbp)", shape=cylinder, fillcolor="#fde68a"];
+
+  browser -> interceptor [label="HTTP"];
+  interceptor -> controllers; controllers -> views [label="render"]; controllers -> services;
+  services -> domain; services -> repos; repos -> db [label="JDBC"];
+  browser -> actuator [style=dashed, label="health probe"]; actuator -> db [style=dashed];
+}

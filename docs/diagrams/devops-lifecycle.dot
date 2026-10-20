@@ -1,0 +1,21 @@
+digraph G {
+  rankdir=LR; splines=true; nodesep=0.35; ranksep=0.45; bgcolor="white";
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.15,0.1", color="#334e68"];
+  edge [color="#334e68", fontname="Helvetica", fontsize=9, arrowsize=0.8];
+
+  subgraph cluster_dev { label="DEVELOPMENT"; fontname="Helvetica-Bold"; fontsize=12; style="rounded,dashed"; color="#0b5cad";
+    plan  [label="PLAN\nGitHub Issues\nKanban board\nUser stories", fillcolor="#dbeafe"];
+    code  [label="CODE\nGit + GitHub\nfeature branches\npull requests", fillcolor="#dbeafe"];
+    build [label="BUILD\nMaven\nJenkins job\nWAR artefact", fillcolor="#dbeafe"];
+    test  [label="TEST\nJUnit + Mockito\nSelenium WebDriver\nJenkins reports", fillcolor="#dbeafe"];
+  }
+  subgraph cluster_ops { label="OPERATIONS"; fontname="Helvetica-Bold"; fontsize=12; style="rounded,dashed"; color="#1f7a4d";
+    release [label="RELEASE\nGit tag\nversioned Docker image\nDocker Hub", fillcolor="#dcfce7"];
+    deploy  [label="DEPLOY\nTomcat / Docker\nAnsible playbook", fillcolor="#dcfce7"];
+    operate [label="OPERATE\nsystemd / container\nrestart policy\nrollback", fillcolor="#dcfce7"];
+    monitor [label="MONITOR\n/actuator/health\nJenkins + app logs", fillcolor="#dcfce7"];
+  }
+  plan -> code -> build -> test -> release -> deploy -> operate -> monitor;
+  monitor -> plan [label="feedback: bugs, new stories", constraint=false, style=dashed, color="#b42318", fontcolor="#b42318"];
+  test -> code [label="failed tests\nstop the pipeline", constraint=false, style=dashed, color="#b42318", fontcolor="#b42318"];
+}

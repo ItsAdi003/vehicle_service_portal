@@ -1,0 +1,37 @@
+digraph G {
+  rankdir=LR; bgcolor="white"; nodesep=0.8; ranksep=1.1;
+  node [shape=plaintext, fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=10, color="#334e68"];
+
+  users [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="4" bgcolor="#f0f4f8">
+    <tr><td bgcolor="#0b5cad"><font color="white"><b>users</b></font></td></tr>
+    <tr><td align="left"><b>PK</b> id : BIGINT</td></tr>
+    <tr><td align="left">full_name : VARCHAR</td></tr>
+    <tr><td align="left">email : VARCHAR (unique)</td></tr>
+    <tr><td align="left">password_hash : VARCHAR</td></tr>
+    <tr><td align="left">phone : VARCHAR (optional)</td></tr>
+    <tr><td align="left">role : CUSTOMER | ADMIN</td></tr></table>>];
+
+  slots [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="4" bgcolor="#f0f4f8">
+    <tr><td bgcolor="#0b5cad"><font color="white"><b>service_slots</b></font></td></tr>
+    <tr><td align="left"><b>PK</b> id : BIGINT</td></tr>
+    <tr><td align="left">slot_date : DATE</td></tr>
+    <tr><td align="left">start_time : TIME</td></tr>
+    <tr><td align="left">capacity : INT</td></tr>
+    <tr><td align="left">unique(slot_date, start_time)</td></tr></table>>];
+
+  bookings [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="4" bgcolor="#f0f4f8">
+    <tr><td bgcolor="#0b5cad"><font color="white"><b>bookings</b></font></td></tr>
+    <tr><td align="left"><b>PK</b> id : BIGINT</td></tr>
+    <tr><td align="left"><b>FK</b> user_id -&gt; users.id</td></tr>
+    <tr><td align="left"><b>FK</b> slot_id -&gt; service_slots.id</td></tr>
+    <tr><td align="left">vehicle_number : VARCHAR</td></tr>
+    <tr><td align="left">vehicle_model : VARCHAR</td></tr>
+    <tr><td align="left">service_type : ENUM</td></tr>
+    <tr><td align="left">notes : VARCHAR(255)</td></tr>
+    <tr><td align="left">status : REQUESTED | CONFIRMED |<br align="left"/>COMPLETED | CANCELLED</td></tr>
+    <tr><td align="left">requested_at, confirmed_at,<br align="left"/>completed_at, cancelled_at : TIMESTAMP</td></tr></table>>];
+
+  users -> bookings [label="1 : 0..*  makes", arrowhead=crow, arrowtail=tee, dir=both];
+  slots -> bookings [label="1 : 0..*  holds", arrowhead=crow, arrowtail=tee, dir=both];
+}

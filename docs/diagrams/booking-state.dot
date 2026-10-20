@@ -1,0 +1,12 @@
+digraph G {
+  rankdir=LR; bgcolor="white"; nodesep=0.5; ranksep=0.9;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.2,0.12", color="#334e68"];
+  edge [color="#334e68", fontname="Helvetica", fontsize=10];
+  start [shape=circle, label="", width=0.2, style=filled, fillcolor="#334e68"];
+  REQUESTED [fillcolor="#fde68a"]; CONFIRMED [fillcolor="#bfdbfe"]; COMPLETED [fillcolor="#bbf7d0"]; CANCELLED [fillcolor="#e5e7eb"];
+  start -> REQUESTED [label="customer requests"];
+  REQUESTED -> CONFIRMED [label="admin confirms"];
+  CONFIRMED -> COMPLETED [label="admin completes"];
+  REQUESTED -> CANCELLED [label="customer cancels\n(seat released)"];
+  CONFIRMED -> CANCELLED [label="customer cancels\n(seat released)"];
+}

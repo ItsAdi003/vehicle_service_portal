@@ -1,0 +1,25 @@
+digraph G {
+  rankdir=LR; bgcolor="white"; nodesep=0.3; ranksep=1.1;
+  node [fontname="Helvetica", fontsize=11];
+  edge [color="#52606d", arrowhead=none];
+
+  customer [label="Customer\n(vehicle owner)", shape=box, style="filled", fillcolor="#fef3c7", color="#b7791f"];
+  admin    [label="Service Admin\n(workshop staff)", shape=box, style="filled", fillcolor="#fef3c7", color="#b7791f"];
+
+  subgraph cluster_sys { label="Vehicle Service Booking Portal"; fontname="Helvetica-Bold"; style="rounded"; color="#0b5cad";
+    node [shape=ellipse, style="filled", fillcolor="#dbeafe", color="#0b5cad"];
+    uc1 [label="UC-01\nRegister account"];
+    uc2 [label="UC-02\nLog in / log out"];
+    uc3 [label="UC-03\nView slot availability"];
+    uc4 [label="UC-04\nRequest a booking"];
+    uc5 [label="UC-05\nCancel a booking"];
+    uc6 [label="UC-06\nTrack booking status"];
+    uc7 [label="UC-07\nReview all bookings"];
+    uc8 [label="UC-08\nConfirm a booking"];
+    uc9 [label="UC-09\nMark service completed"];
+  }
+  customer -> uc1; customer -> uc2; customer -> uc3; customer -> uc4; customer -> uc5; customer -> uc6;
+  admin -> uc2; admin -> uc7; admin -> uc8; admin -> uc9;
+  uc4 -> uc3 [style=dashed, arrowhead=open, label="<<include>>", fontsize=9, fontname="Helvetica"];
+  uc8 -> uc7 [style=dashed, arrowhead=open, label="<<extend>>", fontsize=9, fontname="Helvetica"];
+}
