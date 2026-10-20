@@ -9,6 +9,11 @@
   <section class="hero">
     <h1 id="page-title">Book your vehicle service in minutes</h1>
     <p>See open service slots, request an appointment, and follow its status until your vehicle is ready.</p>
+    <p th:if="${me == null}" class="form-actions">
+      <a id="cta-register" class="btn" th:href="@{/register}">Create an account</a>
+      <a id="cta-login" th:href="@{/login}">Log in</a>
+    </p>
+    <p th:if="${me != null}" id="welcome-message">Welcome back, <strong th:text="${me.name}">Customer</strong>.</p>
   </section>
 </main>
 
