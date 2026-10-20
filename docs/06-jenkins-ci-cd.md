@@ -103,3 +103,46 @@ stage('Selenium UI Tests') {
 2. Introduce the defect with `docs/defect-demo/cancel-seat-defect.patch` (see `docs/defect-demo/README.md`): red run,
    deploy stages skipped, screenshot archived.
 3. Fix commit and green re-run.
+
+## 6.6 Jenkins-Docker continuous deployment (Task 13)
+
+### One-time setup
+1. Install Docker (Docker Desktop on Windows/macOS, Docker Engine on Linux) on the **Jenkins machine** and check `docker version` works for the account that runs Jenkins.
+   - Linux: `sudo usermod -aG docker jenkins && sudo systemctl restart jenkins`
+   - Windows: run the Jenkins service as your user (not Local System) or Docker Desktop will not be reachable.
+2. Install the Jenkins plugin **Docker Pipeline**.
+3. Create a Docker Hub **access token** (Account settings -> Security -> New access token, permissions *Read & Write*).
+4. Jenkins -> **Manage Jenkins -> Credentials -> (global) -> Add credentials**: kind *Username with password*, username = Docker Hub user, password = the token, **ID `dockerhub-credentials`**.
+
+### New stages
+| Stage | What it does |
+|-------|--------------|
+| Docker Build and Push | `docker build` with tag `1.0.<BUILD_NUMBER>`, pushes `:1.0.<n>` and `:latest` to Docker Hub |
+| Deploy Container | Removes the previous container `vsbp-<env>`, starts a fresh one from the new tag with `-p <HOST_PORT>:8080`, waits for `/actuator/health` |
+
+They run only after **all tests passed** (they are placed after the Selenium stage) and only when `BUILD_DOCKER_IMAGE` is true.
+
+New parameters: `BUILD_DOCKER_IMAGE` (default true), `DOCKERHUB_USER` (**set to your user name**), `HOST_PORT` (default 9090).
+
+### End-to-end demonstration (commit to container)
+1. Change the heading text in `index.html`, commit and push to `develop`.
+2. Jenkins polls, builds, tests, packages, deploys to Tomcat, builds image `1.0.<n>`, pushes it and runs the container.
+3. Open `http://localhost:9090/` - the new heading is visible. The footer shows the environment name.
+4. `docker ps` shows the container with the image tag; Docker Hub shows the new tag.
+
+### Local registry alternative (no Docker Hub account)
+```bash
+docker run -d -p 5000:5000 --name registry registry:2
+```
+and in the Jenkinsfile use `docker.withRegistry('http://localhost:5000')` with image names `localhost:5000/vehicle-service-portal`.
+
+### Rollback to a previous version
+Every build is a tagged image, so rolling back is a redeploy of an older tag:
+```bash
+docker rm -f vsbp-dev
+docker run -d --name vsbp-dev -p 9090:8080 -e APP_ENVIRONMENT=dev -v vsbp-dev-data:/data <user>/vehicle-service-portal:1.0.<previous-build>
+```
+
+### Evidence checklist (Task 13)
+Docker Hub tag list; Jenkins Stage View with the two Docker stages green; console excerpt `Published <user>/vehicle-service-portal:1.0.<n>`;
+`docker ps` and a browser screenshot of the running container; the commit that triggered the build (`git log -1`).

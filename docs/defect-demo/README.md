@@ -23,7 +23,7 @@ Jenkins starts automatically. Expected: stages Build, Unit Tests, Package are gr
 the stages *Deploy to Tomcat* and *Verify Tomcat Deployment* (and the Docker stages, once added) are **skipped** and the
 application on Tomcat keeps running the previous version. Capture: Stage View, Test Result page showing
 `CancelBookingIT.cancellingReleasesTheSeat` failed, the archived screenshot in *Build Artifacts*, console error
-`expected: 3 but was: 2`-style assertion.
+an assertion such as `expected: <n> but was: <n-1>` on the seats-left count.
 
 ```bash
 # 2. correct the defect with a visible fix commit
