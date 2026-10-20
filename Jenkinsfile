@@ -38,6 +38,12 @@ pipeline {
            description: 'Tomcat 10.1 directory on the Jenkins machine (Windows example: C:/tomcat)')
     string(name: 'TOMCAT_URL', defaultValue: 'http://localhost:8081',
            description: 'Base URL of Tomcat (Jenkins itself keeps port 8080)')
+    booleanParam(name: 'BUILD_DOCKER_IMAGE', defaultValue: true,
+                 description: 'Build a versioned Docker image, push it to Docker Hub and run a fresh container')
+    string(name: 'DOCKERHUB_USER', defaultValue: 'your-dockerhub-username',
+           description: 'Docker Hub account / namespace that receives the image')
+    string(name: 'HOST_PORT', defaultValue: '9090',
+           description: 'Host port mapped to container port 8080')
   }
 
   environment {
@@ -121,6 +127,38 @@ pipeline {
       }
     }
 
+    stage('Docker Build and Push') {
+      when { expression { params.BUILD_DOCKER_IMAGE } }
+      steps {
+        script {
+          def image = "${params.DOCKERHUB_USER}/${env.APP_NAME}"
+          // Needs the "Docker Pipeline" plugin and a Jenkins credential with id dockerhub-credentials
+          docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+            def built = docker.build("${image}:${env.IMAGE_TAG}", "--build-arg APP_ENV=${params.DEPLOY_ENV} .")
+            built.push()
+            built.push('latest')
+          }
+          echo "Published ${image}:${env.IMAGE_TAG}"
+        }
+      }
+    }
+
+    stage('Deploy Container') {
+      when { expression { params.BUILD_DOCKER_IMAGE } }
+      steps {
+        script {
+          def image = "${params.DOCKERHUB_USER}/${env.APP_NAME}:${env.IMAGE_TAG}"
+          def name  = "vsbp-${params.DEPLOY_ENV}"
+          runStatus "docker rm -f ${name}"      // ignore "no such container" on the first run
+          run "docker run -d --name ${name} -p ${params.HOST_PORT}:8080 -e APP_ENVIRONMENT=${params.DEPLOY_ENV} -v ${name}-data:/data --restart unless-stopped ${image}"
+          retry(12) {
+            sleep time: 5, unit: 'SECONDS'
+            run "curl --fail --silent --show-error http://localhost:${params.HOST_PORT}/actuator/health"
+          }
+          echo "Container ${name} is running ${image} on http://localhost:${params.HOST_PORT}/"
+        }
+      }
+    }
   }
 
   post {
