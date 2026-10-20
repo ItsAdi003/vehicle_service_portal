@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Available slots')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+  <h1 id="page-title">Available service slots</h1>
+  <p class="muted">Seats left are updated live as customers book or cancel.</p>
+
+  <p id="no-slots" th:if="${#lists.isEmpty(slots)}">No upcoming slots at the moment. Please check back later.</p>
+
+  <table id="slots-table" th:unless="${#lists.isEmpty(slots)}">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Seats left</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="slot-row" th:each="s : ${slots}" th:attr="data-slot-id=${s.slot.id}">
+        <td th:text="${s.slot.dateLabel}">Thu, 22 Oct 2026</td>
+        <td th:text="${s.slot.timeLabel}">09:00</td>
+        <td>
+          <span class="seats-left" th:classappend="${s.full} ? 'seats-full'"
+                th:text="${s.full} ? 'Full' : ${s.available}">3</span>
+        </td>
+        <td>
+          <a class="btn book-link" th:unless="${s.full}" th:href="@{/bookings/new(slotId=${s.slot.id})}">Book</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

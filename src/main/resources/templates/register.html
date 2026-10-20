@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Register')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+  <div class="card">
+    <h1 id="page-title">Create your account</h1>
+    <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+      <label for="fullName">Full name</label>
+      <input type="text" th:field="*{fullName}" autocomplete="name">
+      <div class="field-error" id="fullName-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+
+      <label for="email">E-mail</label>
+      <input type="email" th:field="*{email}" autocomplete="email">
+      <div class="field-error" id="email-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+      <label for="phone">Phone (optional)</label>
+      <input type="text" th:field="*{phone}" autocomplete="tel">
+      <div class="field-error" id="phone-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+
+      <label for="password">Password (min. 8 characters)</label>
+      <input type="password" th:field="*{password}" autocomplete="new-password">
+      <div class="field-error" id="password-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+      <div class="form-actions">
+        <button id="register-btn" class="btn" type="submit">Register</button>
+        <a th:href="@{/login}">Already have an account?</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

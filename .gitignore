@@ -25,7 +25,7 @@ Thumbs.db
 # Logs and test evidence generated locally
 *.log
 logs/
-evidence/
+/evidence/
 
 # Secrets (never commit)
 *.env

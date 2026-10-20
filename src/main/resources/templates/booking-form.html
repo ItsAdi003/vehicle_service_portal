@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Book a slot')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+  <div class="card">
+    <h1 id="page-title">Request a service booking</h1>
+    <p id="slot-summary">
+      Slot: <strong th:text="${slot.dateLabel} + ' at ' + ${slot.timeLabel}">Thu, 22 Oct 2026 at 09:00</strong>
+    </p>
+
+    <form th:action="@{/bookings}" th:object="${form}" method="post" novalidate>
+      <input type="hidden" th:field="*{slotId}">
+
+      <label for="vehicleNumber">Vehicle registration number</label>
+      <input type="text" th:field="*{vehicleNumber}" placeholder="e.g. MH12AB1234">
+      <div class="field-error" id="vehicleNumber-error" th:if="${#fields.hasErrors('vehicleNumber')}" th:errors="*{vehicleNumber}"></div>
+
+      <label for="vehicleModel">Vehicle make and model</label>
+      <input type="text" th:field="*{vehicleModel}" placeholder="e.g. Honda City">
+      <div class="field-error" id="vehicleModel-error" th:if="${#fields.hasErrors('vehicleModel')}" th:errors="*{vehicleModel}"></div>
+
+      <label for="serviceType">Service type</label>
+      <select th:field="*{serviceType}">
+        <option value="">-- choose a service --</option>
+        <option th:each="t : ${serviceTypes}" th:value="${t}" th:text="${t.label}">General service</option>
+      </select>
+      <div class="field-error" id="serviceType-error" th:if="${#fields.hasErrors('serviceType')}" th:errors="*{serviceType}"></div>
+
+      <label for="notes">Notes (optional)</label>
+      <textarea rows="3" th:field="*{notes}"></textarea>
+      <div class="field-error" id="notes-error" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></div>
+
+      <div class="form-actions">
+        <button id="submit-booking" class="btn" type="submit">Request booking</button>
+        <a th:href="@{/slots}">Back to slots</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

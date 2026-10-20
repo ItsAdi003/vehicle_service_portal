@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Log in')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+  <div class="card">
+    <h1 id="page-title">Log in</h1>
+    <form th:action="@{/login}" th:object="${form}" method="post" novalidate>
+      <label for="email">E-mail</label>
+      <input type="email" th:field="*{email}" autocomplete="username">
+      <div class="field-error" id="email-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+      <label for="password">Password</label>
+      <input type="password" th:field="*{password}" autocomplete="current-password">
+      <div class="field-error" id="password-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+      <div class="form-actions">
+        <button id="login-btn" class="btn" type="submit">Log in</button>
+        <a th:href="@{/register}">Create an account</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

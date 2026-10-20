@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My bookings')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+  <h1 id="page-title">My bookings</h1>
+
+  <p id="no-bookings" th:if="${#lists.isEmpty(bookings)}">
+    You have no bookings yet. <a th:href="@{/slots}">Find a slot</a>.
+  </p>
+
+  <table id="bookings-table" th:unless="${#lists.isEmpty(bookings)}">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Slot</th>
+        <th>Vehicle</th>
+        <th>Service</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="booking-row" th:each="b : ${bookings}" th:attr="data-booking-id=${b.id}">
+        <td th:text="${b.id}">1</td>
+        <td th:text="${b.slot.dateLabel} + ', ' + ${b.slot.timeLabel}">Thu, 22 Oct 2026, 09:00</td>
+        <td><span class="vehicle-number" th:text="${b.vehicleNumber}">MH12AB1234</span><br>
+            <span class="muted" th:text="${b.vehicleModel}">Honda City</span></td>
+        <td th:text="${b.serviceType.label}">Oil change</td>
+        <td><span class="badge booking-status" th:classappend="${'status-' + b.status.name().toLowerCase()}"
+                  th:text="${b.status}">REQUESTED</span></td>
+        <td>
+          <a class="details-link" th:href="@{/bookings/{id}(id=${b.id})}">Details</a>
+          <form th:if="${b.cancellable}" th:action="@{/bookings/{id}/cancel(id=${b.id})}" method="post">
+            <button class="btn btn-danger cancel-btn" th:id="${'cancel-btn-' + b.id}" type="submit">Cancel</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
