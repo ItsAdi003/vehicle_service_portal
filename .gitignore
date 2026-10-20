@@ -1,0 +1,33 @@
+# Build output
+target/
+*.war
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Local database files (H2)
+data/
+*.mv.db
+*.trace.db
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+nbproject/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and test evidence generated locally
+*.log
+logs/
+evidence/
+
+# Secrets (never commit)
+*.env
+!ansible/roles/**/templates/*.env.j2
+.env
