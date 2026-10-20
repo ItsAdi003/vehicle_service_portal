@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Error')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="container">
+  <div class="card">
+    <h1 id="page-title">Something went wrong</h1>
+    <p>
+      <span id="error-status" th:text="${status}">500</span>
+      <span id="error-reason" th:text="${error}">Internal Server Error</span>
+    </p>
+    <p th:if="${status == 403}">You do not have permission to open this page.</p>
+    <p th:if="${status == 404}">The page you asked for does not exist.</p>
+    <a class="btn" th:href="@{/}">Back to home</a>
+  </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
