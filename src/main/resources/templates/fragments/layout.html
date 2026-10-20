@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' | Vehicle Service Portal'">Vehicle Service Portal</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header th:fragment="header" class="site-header">
+  <div class="container nav-bar">
+    <a class="brand" th:href="@{/}">Vehicle Service Portal</a>
+    <nav id="main-nav">
+      <a th:href="@{/}">Home</a>
+    </nav>
+  </div>
+</header>
+
+<div th:fragment="flash" class="container">
+  <div th:if="${success}" id="flash-success" class="alert alert-success" th:text="${success}"></div>
+  <div th:if="${error}" id="flash-error" class="alert alert-error" th:text="${error}"></div>
+</div>
+
+<footer th:fragment="footer" class="site-footer">
+  <div class="container">
+    Environment: <strong id="env-badge" th:text="${appEnvironment}">local</strong>
+    &middot; Version <span id="app-version" th:text="${appVersion}">dev</span>
+  </div>
+</footer>
+
+</body>
+</html>
