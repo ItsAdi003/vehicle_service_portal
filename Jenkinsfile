@@ -79,6 +79,19 @@ pipeline {
       }
     }
 
+    stage('Selenium UI Tests') {
+      steps {
+        // A failing test fails this stage, so the deploy stages below never run.
+        script { run 'mvn -B -ntp -Dselenium.headless=true test-compile failsafe:integration-test failsafe:verify' }
+      }
+      post {
+        always {
+          junit allowEmptyResults: true, testResults: 'target/failsafe-reports/*.xml'
+          archiveArtifacts artifacts: 'target/screenshots/*', allowEmptyArchive: true
+        }
+      }
+    }
+
     stage('Deploy to Tomcat') {
       when { expression { params.DEPLOY_TO_TOMCAT } }
       steps {

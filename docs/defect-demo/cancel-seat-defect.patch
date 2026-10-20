@@ -1,0 +1,13 @@
+diff --git a/src/main/java/com/vsbp/service/SlotService.java b/src/main/java/com/vsbp/service/SlotService.java
+index 6a6bb39..12dc135 100644
+--- a/src/main/java/com/vsbp/service/SlotService.java
++++ b/src/main/java/com/vsbp/service/SlotService.java
+@@ -41,7 +41,7 @@ public class SlotService {
+ 
+     /** Capacity minus bookings that still hold a seat (everything except CANCELLED). Never negative. */
+     public int availableSeats(ServiceSlot slot) {
+-        long used = bookings.countBySlotIdAndStatusNot(slot.getId(), BookingStatus.CANCELLED);
++        long used = bookings.countBySlotIdAndStatusNot(slot.getId(), BookingStatus.COMPLETED);
+         return (int) Math.max(0, slot.getCapacity() - used);
+     }
+ }
