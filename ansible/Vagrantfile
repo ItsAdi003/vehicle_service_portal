@@ -1,0 +1,22 @@
+# Clean Ubuntu 22.04 node for Task 15 (works from a Windows, macOS or Linux host with VirtualBox + Vagrant).
+# Ansible runs INSIDE the VM (ansible_local), so the host does not need Ansible.
+#   cd ansible && vagrant up           # creates the VM and runs site.yml
+#   vagrant provision                  # re-run the playbook (idempotency demonstration)
+#   vagrant destroy -f                 # throw the node away to start from a clean machine again
+# Build the WAR first on the host: mvn clean package -DskipTests
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "vsbp-node"
+  config.vm.network "forwarded_port", guest: 8080, host: 8085   # Jenkins keeps host port 8080
+  config.vm.synced_folder "..", "/vagrant"                       # project root, so ../target/*.war is visible
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 1024
+    vb.cpus = 1
+  end
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "ansible/site.yml"
+    ansible.provisioning_path = "/vagrant"
+    ansible.groups = { "vsbp_servers" => ["default"] }
+    ansible.extra_vars = { vsbp_artifact_src: "/vagrant/target/vehicle-service-portal.war" }
+  end
+end

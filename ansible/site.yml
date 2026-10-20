@@ -1,0 +1,9 @@
+---
+# Provision the node and deploy the portal. Safe to run repeatedly (idempotent).
+#   ansible-playbook site.yml
+#   ansible-playbook site.yml -e vsbp_version=1.1.0 -e vsbp_environment=production
+- name: Provision and deploy the Vehicle Service Booking Portal
+  hosts: vsbp_servers
+  become: true
+  roles:
+    - vsbp
