@@ -5,7 +5,7 @@ import com.vsbp.domain.ServiceSlot;
 import com.vsbp.repository.BookingRepository;
 import com.vsbp.repository.ServiceSlotRepository;
 import java.time.Clock;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +23,12 @@ public class SlotService {
         this.clock = clock;
     }
 
-    /** Slots from today onwards, ordered by date and time, each with its free seats. */
+    /** Slots that have not started yet, ordered by date and time, each with its free seats. */
     @Transactional(readOnly = true)
     public List<SlotAvailability> upcomingSlots() {
-        LocalDate today = LocalDate.now(clock);
-        return slots.findBySlotDateGreaterThanEqualOrderBySlotDateAscStartTimeAsc(today).stream()
+        LocalDateTime now = LocalDateTime.now(clock);
+        return slots.findBySlotDateGreaterThanEqualOrderBySlotDateAscStartTimeAsc(now.toLocalDate()).stream()
+                .filter(slot -> slot.getStart().isAfter(now))
                 .map(slot -> new SlotAvailability(slot, availableSeats(slot)))
                 .toList();
     }
@@ -37,6 +38,11 @@ public class SlotService {
         ServiceSlot slot = slots.findById(slotId)
                 .orElseThrow(() -> new BusinessException("The selected slot does not exist"));
         return new SlotAvailability(slot, availableSeats(slot));
+    }
+
+    /** True once the slot's start time has been reached; such a slot can no longer be booked. */
+    public boolean hasStarted(ServiceSlot slot) {
+        return !slot.getStart().isAfter(LocalDateTime.now(clock));
     }
 
     /** Capacity minus bookings that still hold a seat (everything except CANCELLED). Never negative. */

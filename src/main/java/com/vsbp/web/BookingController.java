@@ -33,8 +33,12 @@ public class BookingController {
     }
 
     @GetMapping("/new")
-    public String newBooking(@RequestParam("slotId") Long slotId, Model model, RedirectAttributes redirect) {
+    public String newBooking(@RequestParam(value = "slotId", required = false) Long slotId,
+                             @SessionAttribute(SessionUser.KEY) SessionUser me,
+                             Model model,
+                             RedirectAttributes redirect) {
         try {
+            rejectAdmin(me);
             BookingForm form = new BookingForm();
             form.setSlotId(slotId);
             return showForm(form, model);
@@ -51,6 +55,7 @@ public class BookingController {
                          Model model,
                          RedirectAttributes redirect) {
         try {
+            rejectAdmin(me);
             if (result.hasErrors()) {
                 return showForm(form, model);
             }
@@ -97,12 +102,22 @@ public class BookingController {
         return "redirect:/bookings";
     }
 
-    /** Fills the model for the booking form; throws BusinessException if the slot is unknown or full. */
+    /** Bookings are made by customers; the workshop admin only confirms and completes them. */
+    private static void rejectAdmin(SessionUser me) {
+        if (me.isAdmin()) {
+            throw new BusinessException("Admins manage bookings and cannot book slots themselves");
+        }
+    }
+
+    /** Fills the model for the booking form; throws BusinessException if the slot is unknown, past or full. */
     private String showForm(BookingForm form, Model model) {
         if (form.getSlotId() == null) {
             throw new BusinessException("Please choose a slot first");
         }
         SlotAvailability availability = slotService.availability(form.getSlotId());
+        if (slotService.hasStarted(availability.getSlot())) {
+            throw new BusinessException("This slot is in the past");
+        }
         if (availability.isFull()) {
             throw new BusinessException("This slot is fully booked");
         }

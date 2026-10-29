@@ -9,6 +9,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +62,7 @@ public class DataSeeder implements CommandLineRunner {
 
     private void seedAdmin() {
         if (!users.existsByEmailIgnoreCase(adminEmail)) {
-            users.save(new AppUser("Service Admin", adminEmail.toLowerCase(),
+            users.save(new AppUser("Service Admin", adminEmail.trim().toLowerCase(Locale.ROOT),
                     passwordEncoder.encode(adminPassword), null, Role.ADMIN));
             log.info("Seeded admin account {}", adminEmail);
         }

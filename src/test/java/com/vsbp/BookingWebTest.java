@@ -142,6 +142,28 @@ class BookingWebTest {
     }
 
     @Test
+    void bookingFormWithoutSlotRedirectsToSlotsWithMessage() throws Exception {
+        Customer customer = registerAndLogin();
+
+        mockMvc.perform(get("/bookings/new").session(customer.session()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/slots"));
+    }
+
+    @Test
+    void adminCannotBookASlot() throws Exception {
+        MockHttpSession admin = login("admin@vsbp.local", "Admin@123");
+        Long slotId = slots.findAll().get(0).getId();
+
+        mockMvc.perform(get("/bookings/new").param("slotId", String.valueOf(slotId)).session(admin))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/slots"));
+        mockMvc.perform(get("/slots").session(admin))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("book-link"))));
+    }
+
+    @Test
     void adminLoginLandsOnAdminList() throws Exception {
         mockMvc.perform(post("/login").param("email", "admin@vsbp.local").param("password", "Admin@123"))
                 .andExpect(redirectedUrl("/admin/bookings"));
