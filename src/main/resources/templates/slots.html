@@ -29,7 +29,7 @@
                 th:text="${s.full} ? 'Full' : ${s.available}">3</span>
         </td>
         <td>
-          <a class="btn book-link" th:unless="${s.full}" th:href="@{/bookings/new(slotId=${s.slot.id})}">Book</a>
+          <a class="btn book-link" th:unless="${s.full or me.admin}" th:href="@{/bookings/new(slotId=${s.slot.id})}">Book</a>
         </td>
       </tr>
     </tbody>

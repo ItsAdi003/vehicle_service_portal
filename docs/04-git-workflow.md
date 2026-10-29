@@ -58,6 +58,35 @@ Example review comments (use real ones from your reviewer):
 
 Merge evidence: PR page showing *Merged*, `git log --graph` showing the merge commit on `develop`.
 
+### Replaying the first pull request on GitHub
+
+In this repository `feature/user-registration-login` is already merged into `develop` locally, and GitHub
+will not open a pull request for a branch with nothing left to compare. To get a genuine pull request with
+review comments, publish `develop` as it was *before* that merge, push the feature branch, and do the merge
+on GitHub:
+
+```bash
+git remote add origin https://github.com/<your-username>/vehicle-service-portal.git
+git push origin 5ba2357:refs/heads/main          # initial commits only
+git push origin 5ba2357:refs/heads/develop       # develop before the first feature merge
+git push origin feature/user-registration-login  # the feature commits waiting for review
+```
+
+1. On GitHub open **Compare & pull request** for `feature/user-registration-login` into `develop`, fill in the template,
+   ask the reviewer for line comments, answer them and merge with **Create a merge commit**.
+2. Bring your local `develop` in line and publish the rest of the history:
+   ```bash
+   git checkout develop
+   git fetch origin
+   git merge --no-edit origin/develop     # adds GitHub's merge commit; the files are identical
+   git push origin develop main --tags
+   git push origin --all
+   ```
+
+`5ba2357` is the commit *"docs: add problem definition, MVP scope, agile plan and diagram sources"*
+(`git log --first-parent --oneline develop` lists it just below the first feature merge). The procedure was
+rehearsed against a scratch remote: after step 2 the tree of `develop` is byte-identical to the original.
+
 ## 4.4 Second feature branches, conflict and tag (Task 7)
 
 Branches merged into `develop`: `feature/slot-availability`, `feature/ui-navigation`,
