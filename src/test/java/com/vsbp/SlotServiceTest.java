@@ -83,6 +83,22 @@ class SlotServiceTest {
     }
 
     @Test
+    void upcomingSlotsSkipTodaysSlotsThatAlreadyStarted() {
+        ServiceSlot started = new ServiceSlot(LocalDate.of(2026, 10, 21), LocalTime.of(9, 0), 3); // clock is 10:00
+        ServiceSlot later = new ServiceSlot(LocalDate.of(2026, 10, 21), LocalTime.of(11, 0), 3);
+        ReflectionTestUtils.setField(started, "id", 1L);
+        ReflectionTestUtils.setField(later, "id", 2L);
+        when(slots.findBySlotDateGreaterThanEqualOrderBySlotDateAscStartTimeAsc(LocalDate.of(2026, 10, 21)))
+                .thenReturn(List.of(started, later));
+
+        List<SlotAvailability> result = service.upcomingSlots();
+
+        assertThat(result).extracting(a -> a.getSlot().getId()).containsExactly(2L);
+        assertThat(service.hasStarted(started)).isTrue();
+        assertThat(service.hasStarted(later)).isFalse();
+    }
+
+    @Test
     void availabilityOfUnknownSlotIsRejected() {
         when(slots.findById(99L)).thenReturn(Optional.empty());
 

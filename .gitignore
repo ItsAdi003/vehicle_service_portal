@@ -31,3 +31,6 @@ logs/
 *.env
 !ansible/roles/**/templates/*.env.j2
 .env
+
+# Claude Code local launch config
+.claude/
